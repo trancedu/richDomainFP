@@ -10,10 +10,10 @@ protected:
     
 public:
     virtual ~FinancialProduct() = default;
-    FinancialProduct(const std::string& name) : name(name) {}
+    FinancialProduct(std::string name) : name(std::move(name)) {}
     void addSubproduct(std::shared_ptr<FinancialProduct> product);
     virtual double calculatePrice() const = 0;
     virtual void describe() const = 0;
     virtual std::string getType() const = 0;
-    virtual std::string getName() const;
+    std::string getName() const;
 }; 
