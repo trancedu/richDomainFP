@@ -1,82 +1,71 @@
 #include <iostream>
 #include <memory>
 #include <vector>
+#include <stdexcept>
 
 // Forward declarations
 class Swap;
 class Option;
-class FinancialProduct;
 
-// Base class for pricers
-class Pricer {
+// Pricer interfaces
+class ISwapPricer {
 public:
-    virtual ~Pricer() = default;
+    virtual ~ISwapPricer() = default;
     virtual double price(const Swap& swap) const = 0;
+};
+
+class IOptionPricer {
+public:
+    virtual ~IOptionPricer() = default;
     virtual double price(const Option& option) const = 0;
 };
 
-// Concrete pricer for Swaps
-class SwapPricer : public Pricer {
+// Concrete pricers
+class SwapPricer : public ISwapPricer {
 public:
     double price(const Swap& swap) const override {
         std::cout << "Pricing Swap...\n";
         return 100.0;
     }
-    
-    // Add missing implementation for Option
-    double price(const Option& option) const override {
-        throw std::runtime_error("SwapPricer cannot price Options");
-        return 0.0;
-    }
 };
 
-// Concrete pricer for Options
-class OptionPricer : public Pricer {
+class OptionPricer : public IOptionPricer {
 public:
     double price(const Option& option) const override {
         std::cout << "Pricing Option...\n";
         return 50.0;
     }
-    
-    // Add missing implementation for Swap
-    double price(const Swap& swap) const override {
-        throw std::runtime_error("OptionPricer cannot price Swaps");
-        return 0.0;
-    }
 };
 
-// Base class for financial products
+// Base financial product
 class FinancialProduct {
 protected:
-    std::shared_ptr<Pricer> pricer;  // Injected pricer
-    std::vector<std::shared_ptr<FinancialProduct>> subproducts; // Subproducts
-
+    std::vector<std::shared_ptr<FinancialProduct>> subproducts;
+    
 public:
-    explicit FinancialProduct(std::shared_ptr<Pricer> pricer) : pricer(std::move(pricer)) {}
-
     virtual ~FinancialProduct() = default;
-
-    // Allow adding subproducts
     void addSubproduct(std::shared_ptr<FinancialProduct> product) {
         subproducts.push_back(std::move(product));
     }
-
     virtual double calculatePrice() const = 0;
     virtual void describe() const = 0;
 };
 
-// Derived class for Swaps
+// Swap with dedicated pricer interface
 class Swap : public FinancialProduct {
+    std::unique_ptr<ISwapPricer> pricer;
+    
 public:
-    explicit Swap(std::shared_ptr<Pricer> pricer) : FinancialProduct(std::move(pricer)) {}
+    explicit Swap(std::unique_ptr<ISwapPricer> pricer) 
+        : pricer(std::move(pricer)) {}
 
     double calculatePrice() const override {
         if (!subproducts.empty()) {
-            double totalPrice = 0.0;
+            double total = 0.0;
             for (const auto& product : subproducts) {
-                totalPrice += product->calculatePrice();
+                total += product->calculatePrice();
             }
-            return totalPrice;
+            return total;
         }
         return pricer->price(*this);
     }
@@ -86,18 +75,21 @@ public:
     }
 };
 
-// Derived class for Options
+// Option with dedicated pricer interface
 class Option : public FinancialProduct {
+    std::unique_ptr<IOptionPricer> pricer;
+    
 public:
-    explicit Option(std::shared_ptr<Pricer> pricer) : FinancialProduct(std::move(pricer)) {}
+    explicit Option(std::unique_ptr<IOptionPricer> pricer)
+        : pricer(std::move(pricer)) {}
 
     double calculatePrice() const override {
         if (!subproducts.empty()) {
-            double totalPrice = 0.0;
+            double total = 0.0;
             for (const auto& product : subproducts) {
-                totalPrice += product->calculatePrice();
+                total += product->calculatePrice();
             }
-            return totalPrice;
+            return total;
         }
         return pricer->price(*this);
     }
@@ -108,32 +100,24 @@ public:
 };
 
 int main() {
-    // Create pricers
-    auto swapPricer = std::make_shared<SwapPricer>();
-    auto optionPricer = std::make_shared<OptionPricer>();
+    // Create products with their specific pricers
+    auto swap = std::make_shared<Swap>(std::make_unique<SwapPricer>());
+    auto option = std::make_shared<Option>(std::make_unique<OptionPricer>());
 
-    // Create standalone financial products
-    auto swap = std::make_shared<Swap>(swapPricer);
-    auto option = std::make_shared<Option>(optionPricer);
-
-    // Create a structured product with subproducts
-    auto structuredProduct = std::make_shared<Swap>(swapPricer);
+    // Create structured product
+    auto structuredProduct = std::make_shared<Swap>(std::make_unique<SwapPricer>());
     structuredProduct->addSubproduct(swap);
     structuredProduct->addSubproduct(option);
 
-    // Price individual products
+    // Pricing outputs remain the same
     swap->describe();
-    double swapPrice = swap->calculatePrice();
-    std::cout << "Swap Price: " << swapPrice << "\n";
+    std::cout << "Swap Price: " << swap->calculatePrice() << "\n";
 
     option->describe();
-    double optionPrice = option->calculatePrice();
-    std::cout << "Option Price: " << optionPrice << "\n";
+    std::cout << "Option Price: " << option->calculatePrice() << "\n";
 
-    // Price structured product
     structuredProduct->describe();
-    double structuredPrice = structuredProduct->calculatePrice();
-    std::cout << "Structured Product Price: " << structuredPrice << "\n";
+    std::cout << "Structured Price: " << structuredProduct->calculatePrice() << "\n";
 
     return 0;
 }
