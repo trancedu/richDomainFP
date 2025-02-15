@@ -8,6 +8,7 @@ class AsianOption;
 
 class Pricer {
 public:
+    virtual ~Pricer() = default;
     void common_pricing_logic(const FinancialProduct& product) const;
     virtual std::string getType() const = 0;
 };
@@ -20,12 +21,20 @@ public:
 
 class OptionPricer : public Pricer {
 public:
-    double price(const Option& option) const;
-    std::string getType() const override;
-}; 
+    virtual ~OptionPricer() = default;
+    virtual double price(const Option& option) const = 0;
+    std::string getType() const override = 0;
+};
 
-class AsianOptionPricer : public Pricer {
+class AsianOptionPricer : public OptionPricer {
 public:
     double price(const AsianOption& asianOption) const;
+    double price(const Option& option) const override;
+    std::string getType() const override;
+};
+
+class DefaultOptionPricer : public OptionPricer {
+public:
+    double price(const Option& option) const override;
     std::string getType() const override;
 };

@@ -6,7 +6,7 @@
 int main() {
     // Create products with their specific pricers
     auto swap = std::make_shared<Swap>("Swap1", std::make_unique<SwapPricer>());
-    auto option = std::make_shared<Option>("Option1", std::make_unique<OptionPricer>());
+    auto option = std::make_shared<Option>("Option1", std::make_unique<DefaultOptionPricer>());
     auto asianOption = std::make_shared<AsianOption>("AsianOption1", std::make_unique<AsianOptionPricer>());
 
     // Create structured product

@@ -23,8 +23,8 @@ std::string Option::getType() const {
     return "Option";
 } 
 
-AsianOption::AsianOption(std::string name, std::unique_ptr<AsianOptionPricer> pricer) 
-    : Option(std::move(name), nullptr), pricer(std::move(pricer)) {}
+AsianOption::AsianOption(std::string name, std::unique_ptr<AsianOptionPricer> pricer)
+    : Option(std::move(name), std::unique_ptr<OptionPricer>(pricer.release())) {}
 
 double AsianOption::calculatePrice() const {
     return pricer->price(*this);

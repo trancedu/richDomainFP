@@ -4,6 +4,7 @@
 #include <memory>
 
 class Option : public FinancialProduct {
+protected:
     std::unique_ptr<OptionPricer> pricer;
     
 public:
@@ -15,7 +16,6 @@ public:
 
 
 class AsianOption : public Option {
-    std::unique_ptr<AsianOptionPricer> pricer;
 public:
     AsianOption(std::string name, std::unique_ptr<AsianOptionPricer> pricer);
     double calculatePrice() const override;
