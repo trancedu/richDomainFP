@@ -14,13 +14,13 @@ int main() {
     structuredProduct->addSubproduct(option);
 
     // Pricing outputs remain the same
-    swap->describe();
+    // swap->describe();
     std::cout << swap->getName() << " Price: " << swap->calculatePrice() << "\n";
 
-    option->describe();
+    // option->describe();
     std::cout << option->getName() << " Price: " << option->calculatePrice() << "\n";
 
-    structuredProduct->describe();
+    // structuredProduct->describe();
     std::cout << structuredProduct->getName() << " Price: " << structuredProduct->calculatePrice() << "\n";
 
     return 0;
