@@ -18,11 +18,13 @@ int main() {
         160.0,             // Strike price
         0.25,              // Volatility (25%)
         1.0,               // Time to expiration (1 year)
+        0.05,              // Risk-free rate (5%)
+        0.01,              // Dividend yield (1%)
         std::make_unique<BlackScholesPricing>()
     );
 
     // Create a stock
-    Stock apple("AAPL", 185.3);
+    Stock apple("AAPL", 185.3, std::make_unique<SimpleStockPricing>());
 
     // Demonstrate pricing
     std::cout << "Option Price: " << option.getPrice() << "\n";
