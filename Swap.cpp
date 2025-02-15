@@ -1,7 +1,8 @@
 #include "Swap.hpp"
 #include <iostream>
 
-Swap::Swap(std::unique_ptr<SwapPricer> pricer) : pricer(std::move(pricer)) {}
+Swap::Swap(std::string name, std::unique_ptr<SwapPricer> pricer) 
+    : FinancialProduct(name), pricer(std::move(pricer)) {}
 
 double Swap::calculatePrice() const {
     if (!subproducts.empty()) {
@@ -18,6 +19,6 @@ void Swap::describe() const {
     std::cout << "This is a Swap contract.\n";
 }
 
-std::string Swap::getName() const {
+std::string Swap::getType() const {
     return "Swap";
 } 

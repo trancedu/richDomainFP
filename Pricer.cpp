@@ -4,7 +4,7 @@
 #include <iostream>
 
 void Pricer::common_pricing_logic(const FinancialProduct& product) const {
-    std::cout << "Pricing " << product.getName() << "...\n";
+    std::cout << "Pricing " << product.getType() << "...\n";
 }
 
 double SwapPricer::price(const Swap& swap) const {

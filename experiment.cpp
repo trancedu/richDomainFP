@@ -19,14 +19,14 @@ public:
     }
     virtual double calculatePrice() const = 0;
     virtual void describe() const = 0;
-    virtual std::string getName() const = 0;
+    virtual std::string getType() const = 0;
 };
 
 // First declare Pricer and concrete pricers before the product classes
 class Pricer {
 public:
     void common_pricing_logic(const FinancialProduct& product) const {
-        std::cout << "Pricing " << product.getName() << "...\n";
+        std::cout << "Pricing " << product.getType() << "...\n";
     }
 };
 
@@ -68,7 +68,7 @@ public:
     void describe() const override {
         std::cout << "This is a Swap contract.\n";
     }
-    std::string getName() const override {
+    std::string getType() const override {
         return "Swap";
     }
 };
@@ -94,7 +94,7 @@ public:
     void describe() const override {
         std::cout << "This is an Option contract.\n";
     }
-    std::string getName() const override {
+    std::string getType() const override {
         return "Option";
     }
 };

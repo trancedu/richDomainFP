@@ -1,7 +1,8 @@
 #include "Option.hpp"
 #include <iostream>
 
-Option::Option(std::unique_ptr<OptionPricer> pricer) : pricer(std::move(pricer)) {}
+Option::Option(std::string name, std::unique_ptr<OptionPricer> pricer) 
+    : FinancialProduct(name), pricer(std::move(pricer)) {}
 
 double Option::calculatePrice() const {
     if (!subproducts.empty()) {
@@ -18,6 +19,6 @@ void Option::describe() const {
     std::cout << "This is an Option contract.\n";
 }
 
-std::string Option::getName() const {
+std::string Option::getType() const {
     return "Option";
 } 
