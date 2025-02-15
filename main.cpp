@@ -1,40 +1,27 @@
-#include "FinancialProducts.h"
+#include "Swap.hpp"
+#include "Option.hpp"
 #include <iostream>
 #include <memory>
 
-void analyzeRisk(const GreekCalculable& product) {
-    std::cout << "Risk Analysis:\n"
-              << "Delta: " << product.getDelta() << "\n"
-              << "Gamma: " << product.getGamma() << "\n"
-              << "Vega: " << product.getVega() << "\n"
-              << "Theta: " << product.getTheta() << "\n\n";
-}
-
 int main() {
-    // Create an option with Black-Scholes pricing
-    auto option = Option(
-        "AAPL_CALL_2025",  // Name
-        150.0,             // Current price
-        160.0,             // Strike price
-        0.25,              // Volatility (25%)
-        1.0,               // Time to expiration (1 year)
-        0.05,              // Risk-free rate (5%)
-        0.01,              // Dividend yield (1%)
-        std::make_unique<BlackScholesPricing>()
-    );
+    // Create products with their specific pricers
+    auto swap = std::make_shared<Swap>(std::make_unique<SwapPricer>());
+    auto option = std::make_shared<Option>(std::make_unique<OptionPricer>());
 
-    // Create a stock
-    Stock apple("AAPL", 185.3, std::make_unique<SimpleStockPricing>());
+    // Create structured product
+    auto structuredProduct = std::make_shared<Swap>(std::make_unique<SwapPricer>());
+    structuredProduct->addSubproduct(swap);
+    structuredProduct->addSubproduct(option);
 
-    // Demonstrate pricing
-    std::cout << "Option Price: " << option.getPrice() << "\n";
-    std::cout << "Stock Price: " << apple.getPrice() << "\n\n";
+    // Pricing outputs remain the same
+    swap->describe();
+    std::cout << "Swap Price: " << swap->calculatePrice() << "\n";
 
-    // Show Greeks for the option
-    analyzeRisk(option);
+    option->describe();
+    std::cout << "Option Price: " << option->calculatePrice() << "\n";
 
-    // Uncommenting this will cause a compile error (good!)
-    // analyzeRisk(apple); 
+    structuredProduct->describe();
+    std::cout << "Structured Price: " << structuredProduct->calculatePrice() << "\n";
 
     return 0;
-} 
+}

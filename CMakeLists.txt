@@ -8,9 +8,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Create executable
 add_executable(FinancialDemo
     main.cpp
-    FinancialProducts.h
-    FinancialProducts.cpp
+    FinancialProduct.cpp
+    Pricer.cpp
+    Swap.cpp
+    Option.cpp
 )
 
-# Enable C++20 modules if needed (though not used in this example)
-target_compile_features(FinancialDemo PRIVATE cxx_std_20) 
+target_include_directories(FinancialDemo PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}) 

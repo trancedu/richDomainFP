@@ -7,36 +7,6 @@
 class Swap;
 class Option;
 
-// Pricer interfaces
-class ISwapPricer {
-public:
-    virtual ~ISwapPricer() = default;
-    virtual double price(const Swap& swap) const = 0;
-};
-
-class IOptionPricer {
-public:
-    virtual ~IOptionPricer() = default;
-    virtual double price(const Option& option) const = 0;
-};
-
-// Concrete pricers
-class SwapPricer : public ISwapPricer {
-public:
-    double price(const Swap& swap) const override {
-        std::cout << "Pricing Swap...\n";
-        return 100.0;
-    }
-};
-
-class OptionPricer : public IOptionPricer {
-public:
-    double price(const Option& option) const override {
-        std::cout << "Pricing Option...\n";
-        return 50.0;
-    }
-};
-
 // Base financial product
 class FinancialProduct {
 protected:
@@ -49,14 +19,39 @@ public:
     }
     virtual double calculatePrice() const = 0;
     virtual void describe() const = 0;
+    virtual std::string getName() const = 0;
 };
 
-// Swap with dedicated pricer interface
+// First declare Pricer and concrete pricers before the product classes
+class Pricer {
+public:
+    void common_pricing_logic(const FinancialProduct& product) const {
+        std::cout << "Pricing " << product.getName() << "...\n";
+    }
+};
+
+class SwapPricer : public Pricer {
+public:
+    double price(const Swap& swap) const {
+        common_pricing_logic(swap);
+        return 100.0;
+    }
+};
+
+class OptionPricer : public Pricer {
+public:
+    double price(const Option& option) const {
+        common_pricing_logic(option);
+        return 50.0;
+    }
+};
+
+// Then declare the product classes that use them
 class Swap : public FinancialProduct {
-    std::unique_ptr<ISwapPricer> pricer;
+    std::unique_ptr<SwapPricer> pricer;  // Now SwapPricer is fully defined
     
 public:
-    explicit Swap(std::unique_ptr<ISwapPricer> pricer) 
+    explicit Swap(std::unique_ptr<SwapPricer> pricer) 
         : pricer(std::move(pricer)) {}
 
     double calculatePrice() const override {
@@ -73,14 +68,16 @@ public:
     void describe() const override {
         std::cout << "This is a Swap contract.\n";
     }
+    std::string getName() const override {
+        return "Swap";
+    }
 };
 
-// Option with dedicated pricer interface
 class Option : public FinancialProduct {
-    std::unique_ptr<IOptionPricer> pricer;
+    std::unique_ptr<OptionPricer> pricer;  // Now OptionPricer is fully defined
     
 public:
-    explicit Option(std::unique_ptr<IOptionPricer> pricer)
+    explicit Option(std::unique_ptr<OptionPricer> pricer)
         : pricer(std::move(pricer)) {}
 
     double calculatePrice() const override {
@@ -96,6 +93,9 @@ public:
 
     void describe() const override {
         std::cout << "This is an Option contract.\n";
+    }
+    std::string getName() const override {
+        return "Option";
     }
 };
 
