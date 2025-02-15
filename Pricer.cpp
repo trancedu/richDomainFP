@@ -26,3 +26,12 @@ double OptionPricer::price(const Option& option) const {
 std::string OptionPricer::getType() const {
     return "OptionPricer";
 } 
+
+double AsianOptionPricer::price(const AsianOption& asianOption) const {
+    common_pricing_logic(asianOption);
+    return 75.0;
+}
+
+std::string AsianOptionPricer::getType() const {
+    return "AsianOptionPricer";
+}

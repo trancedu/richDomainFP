@@ -4,6 +4,7 @@
 // Forward declarations
 class Swap;
 class Option;
+class AsianOption;
 
 class Pricer {
 public:
@@ -22,3 +23,9 @@ public:
     double price(const Option& option) const;
     std::string getType() const override;
 }; 
+
+class AsianOptionPricer : public Pricer {
+public:
+    double price(const AsianOption& asianOption) const;
+    std::string getType() const override;
+};

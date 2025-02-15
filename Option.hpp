@@ -12,3 +12,13 @@ public:
     void describe() const override;
     std::string getType() const override;
 }; 
+
+
+class AsianOption : public Option {
+    std::unique_ptr<AsianOptionPricer> pricer;
+public:
+    AsianOption(std::string name, std::unique_ptr<AsianOptionPricer> pricer);
+    double calculatePrice() const override;
+    void describe() const override;
+    std::string getType() const override;
+};

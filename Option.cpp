@@ -22,3 +22,18 @@ void Option::describe() const {
 std::string Option::getType() const {
     return "Option";
 } 
+
+AsianOption::AsianOption(std::string name, std::unique_ptr<AsianOptionPricer> pricer) 
+    : Option(std::move(name), nullptr), pricer(std::move(pricer)) {}
+
+double AsianOption::calculatePrice() const {
+    return pricer->price(*this);
+}
+
+void AsianOption::describe() const {
+    std::cout << "This is an Asian Option contract.\n";
+}
+
+std::string AsianOption::getType() const {
+    return "AsianOption";
+}
