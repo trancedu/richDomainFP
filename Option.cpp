@@ -1,19 +1,8 @@
 #include "Option.hpp"
 #include <iostream>
 
-Option::Option(std::string name, std::unique_ptr<OptionPricer> pricer) 
-    : FinancialProduct(name), pricer(std::move(pricer)) {}
-
-double Option::calculatePrice() const {
-    if (!subproducts.empty()) {
-        double total = 0.0;
-        for (const auto& product : subproducts) {
-            total += product->calculatePrice();
-        }
-        return total;
-    }
-    return pricer->price(*this);
-}
+Option::Option(std::string name) 
+    : FinancialProduct(name) {}
 
 void Option::describe() const {
     std::cout << "This is an Option contract.\n";
@@ -24,7 +13,7 @@ std::string Option::getType() const {
 } 
 
 AsianOption::AsianOption(std::string name, std::unique_ptr<AsianOptionPricer> pricer)
-    : Option(std::move(name), std::unique_ptr<OptionPricer>(pricer.release())) {}
+    : Option(std::move(name)), pricer(std::move(pricer)) {}
 
 double AsianOption::calculatePrice() const {
     return pricer->price(*this);
@@ -36,4 +25,19 @@ void AsianOption::describe() const {
 
 std::string AsianOption::getType() const {
     return "AsianOption";
+}
+
+EuropeanOption::EuropeanOption(std::string name, std::unique_ptr<EuropeanOptionPricer> pricer)
+    : Option(std::move(name)), pricer(std::move(pricer)) {}
+
+double EuropeanOption::calculatePrice() const {
+    return pricer->price(*this);
+}
+
+void EuropeanOption::describe() const {
+    std::cout << "This is a European Option contract.\n";
+}
+
+std::string EuropeanOption::getType() const {
+    return "EuropeanOption";
 }

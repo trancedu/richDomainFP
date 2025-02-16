@@ -4,20 +4,26 @@
 #include <memory>
 
 class Option : public FinancialProduct {
-protected:
-    std::unique_ptr<OptionPricer> pricer;
-    
 public:
-    explicit Option(std::string name, std::unique_ptr<OptionPricer> pricer);
-    double calculatePrice() const override;
+    explicit Option(std::string name);
     void describe() const override;
     std::string getType() const override;
 }; 
 
 
 class AsianOption : public Option {
+    std::unique_ptr<AsianOptionPricer> pricer;
 public:
     AsianOption(std::string name, std::unique_ptr<AsianOptionPricer> pricer);
+    double calculatePrice() const override;
+    void describe() const override;
+    std::string getType() const override;
+};
+
+class EuropeanOption : public Option {
+    std::unique_ptr<EuropeanOptionPricer> pricer;
+public:
+    EuropeanOption(std::string name, std::unique_ptr<EuropeanOptionPricer> pricer);
     double calculatePrice() const override;
     void describe() const override;
     std::string getType() const override;
